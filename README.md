@@ -17,7 +17,7 @@ It makes development easier, because you can write code once-in Krystal Script a
 - English like syntax
 - Write once, transpile to both linux and windows, Krystal Transpiler can produce both `.sh` and `.ps1` files
 - Supports direct interop with regular bash and powershell commands
-- Written in Go
+- Written in Python
 - Fully Open Source 😉
 
 ## Limitations
@@ -33,8 +33,8 @@ Only later did I realize why Linux tutorials often explain things using the term
 
 I decided to address this problem once and for all. I knew that the only way to eliminate the fear of using the terminal for people was to make it more appealing and user-friendly. No complicated syntax or unfamiliar symbols, just simple and easy-to-use commands. That's why I embarked on creating my own version of shell scripting.
 
-The initial alpha version of Krystal Script was called "bashX" and was written in C++, targeting only the Linux shell.
+The initial alpha version of Krystal Script was called "bashX" and was written in C++, targeting only the Linux shell and then re-written in Go.
 
-Later on, I realized that many Windows users were also afraid of using the PowerShell or the Command Prompt. This intrigued me, and I thought things could be even simpler if I could develop a unified shell scripting language that worked out of the box on both Linux and Windows. Consequently, I abandoned bashX and decided to drop C++.
+Later on, I realized that many Windows users were also afraid of using the PowerShell or the Command Prompt. This intrigued me, and I thought things could be even simpler if I could develop a unified shell scripting language that worked out of the box on both Linux and Windows. Consequently, I abandoned bashX and decided to drop both C++ and Go and adopt Python
 
 That's when Krystal Script was born—a modern, unified alternative for Windows and Linux that is extremely user-friendly. Believe it or not, you can learn all of it in just a weekend!
