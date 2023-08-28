@@ -60,6 +60,8 @@ IS_IN_TILDA_SCOPE_LINUX = False
 TILDA_WIN = "~win"
 TILDA_LINUX = "~linux"
 DISPLAY_PATTERN = "^display"
+MAKEFILE_PATTERN = "^makefile"
+MAKEFOLDER_PATTERN = "^makefolder"
 ################# TOKENS #######################
 
 
@@ -118,6 +120,19 @@ for line in code:
             write_code(gen_code)
         else:
             FOUND_ERROR = True
+    
+    elif re.search(MAKEFILE_PATTERN, line.lower()):
+        if (gen_code := stdlibks.MakeFile(line, args[2])) != "err":
+            write_code(gen_code)
+        else:
+            FOUND_ERROR = True
+
+    elif re.search(MAKEFOLDER_PATTERN, line.lower()):
+        if (gen_code := stdlibks.MakeFolder(line, args[2])) != "err":
+            write_code(gen_code)
+        else:
+            FOUND_ERROR = True
+    
     else:
         FOUND_ERROR = True
 

@@ -12,10 +12,10 @@ import re
 def Display_fn(line: str, os: str):
 
     ##### TOKENS #####
-    DISPLAY_PATTERN = "^Display\s*\(\s*\"(.*?)\"\s*\)"
-    DISPLAY_PATTERN_NONEWLINE = "^Display\s*\(\s*no\s+new\s+line\s*\s*\"(.*?)\"\s*\)"
-    DISPLAY_PATTERN_LITERAL = "^Display\s*\(\s*literal\s*\"(.*?)\"\s*\)"
-    DISPLAY_PATTERN_LITERALNONEWLINE = "^Display\s*\(\s*literal\s+no\s+new\s+line\s*\"(.*?)\"\s*\)"
+    DISPLAY_PATTERN = "^Display\s*\(\s*\"(.*?)\"\s*\)$"
+    DISPLAY_PATTERN_NONEWLINE = "^Display\s*\(\s*no\s+new\s+line\s*\s*\"(.*?)\"\s*\)$"
+    DISPLAY_PATTERN_LITERAL = "^Display\s*\(\s*literal\s*\"(.*?)\"\s*\)$"
+    DISPLAY_PATTERN_LITERALNONEWLINE = "^Display\s*\(\s*literal\s+no\s+new\s+line\s*\"(.*?)\"\s*\)$"
     ##### TOKENS #####
 
     if re.search(DISPLAY_PATTERN, line):
@@ -41,4 +41,48 @@ def Display_fn(line: str, os: str):
     else:
         return "err"
 
+
+
+def MakeFile(line: str, os: str):
+    #### TOKENS ####
+    MAKEFILE_PATTERN = "^MakeFile\s*\(\s*\"(.*?)\"\s*\)$"
+    MAKEFILE_PATTERN_FORCE = "^MakeFile\s*\(\s*force\s*\"(.*?)\"\s*\)$"
+    #### TOKENS ####
+
+    if re.search(MAKEFILE_PATTERN, line):
+        if os == "linux":
+            return f'touch "{re.findall(MAKEFILE_PATTERN, line)[0]}"'
+        else:
+            return 'if (Test-Path "' + re.findall(MAKEFILE_PATTERN, line)[0] + '") {(Get-Item "' + re.findall(MAKEFILE_PATTERN, line)[0] +'").LastWriteTime = Get-Date} else {New-Item "' + re.findall(MAKEFILE_PATTERN, line)[0] + '" -ItemType File}'
+    elif re.search(MAKEFILE_PATTERN_FORCE, line):
+        if os == "linux":
+            return f'rm "{re.findall(MAKEFILE_PATTERN_FORCE, line)[0]}" && touch "{re.findall(MAKEFILE_PATTERN_FORCE, line)[0]}"'
+    else:
+        return "err"
+    
+
+def MakeFolder(line: str, os: str):
+    #### TOKENS ####
+    MAKEFOLDER_PATTERN = "^MakeFolder\s*\(\s*\"(.*?)\"\s*\)$"
+    MAKEFOLDER_PATTERN_FORCE = "^MakeFolder\s*\(\s*force\s*\"(.*?)\"\s*\)$"
+    MAKEFOLDER_PATTERN_SUBDIRS = "^MakeFolder\s*\(\s*enable\s+sub\s+dirs\s*\"(.*?)\"\s*\)$"
+    #### TOKENS ####
+
+    if re.search(MAKEFOLDER_PATTERN, line):
+        if os == "linux":
+            return f'mkdir "{re.findall(MAKEFOLDER_PATTERN, line)[0]}"'
+        else:
+            return f'New-Item -ItemType Directory -Path "{re.findall(MAKEFOLDER_PATTERN, line)[0]}"'
+    elif re.search(MAKEFOLDER_PATTERN_FORCE, line):
+        if os == "linux":
+            return f'rm -rf "{re.findall(MAKEFOLDER_PATTERN_FORCE, line)[0]}" && mkdir "{re.findall(MAKEFOLDER_PATTERN_FORCE, line)[0]}"'
+        else:
+            return f'Remove-Item -Recurse -Force "{re.findall(MAKEFOLDER_PATTERN_FORCE, line)[0]}"; New-Item -ItemType Directory -Path "{re.findall(MAKEFOLDER_PATTERN_FORCE, line)[0]}"'
+    elif re.search(MAKEFOLDER_PATTERN_SUBDIRS, line):
+        if os == "linux":
+            return f'mkdir -p "{re.findall(MAKEFOLDER_PATTERN_SUBDIRS, line)[0]}"'
+        else:
+            return f'New-Item -ItemType Directory -Path "{re.findall(MAKEFOLDER_PATTERN_SUBDIRS, line)[0]}"'
+    else:
+        return "err"
 ############ EXPORTED FUNCTIONS ###########
