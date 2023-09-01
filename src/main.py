@@ -62,6 +62,8 @@ TILDA_LINUX = "~linux"
 DISPLAY_PATTERN = "^display"
 MAKEFILE_PATTERN = "^makefile"
 MAKEFOLDER_PATTERN = "^makefolder"
+ASK_PATTERN = "^ask"
+ASSIGN_PATTERN = "^assign"
 ################# TOKENS #######################
 
 
@@ -129,6 +131,18 @@ for line in code:
 
     elif re.search(MAKEFOLDER_PATTERN, line.lower()):
         if (gen_code := stdlibks.MakeFolder(line, args[2])) != "err":
+            write_code(gen_code)
+        else:
+            FOUND_ERROR = True
+
+    elif re.search(ASK_PATTERN, line.lower()):
+        if (gen_code := stdlibks.Ask(line, args[2])) != "err":
+            write_code(gen_code)
+        else:
+            FOUND_ERROR = True
+
+    elif re.search(ASSIGN_PATTERN, line.lower()):
+        if (gen_code := stdlibks.Assign(line, args[2])) != "err":
             write_code(gen_code)
         else:
             FOUND_ERROR = True

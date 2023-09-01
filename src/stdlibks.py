@@ -1,5 +1,5 @@
 '''
-Handles Input Output/File system reading/writing
+Handles Input Output/File system reading/writing data types, etc
 '''
 
 ############ IMPORTS ############
@@ -85,4 +85,29 @@ def MakeFolder(line: str, os: str):
             return f'New-Item -ItemType Directory -Path "{re.findall(MAKEFOLDER_PATTERN_SUBDIRS, line)[0]}"'
     else:
         return "err"
+    
+
+def Ask(line: str, os: str):
+    ASK_PATTERN = '^Ask\s*\(\s*"(.*?)"\s*,\s*([a-zA-Z_]+)\s*\)$'
+
+    if re.search(ASK_PATTERN, line):
+        if os == "linux":
+            return f'read -p "{re.findall(ASK_PATTERN, line)[0][0]}" {re.findall(ASK_PATTERN, line)[0][1]}'
+        else:
+            return f'${re.findall(ASK_PATTERN, line)[0][1]} = Read-Host -Prompt "{re.findall(ASK_PATTERN, line)[0][0]}"'
+    else:
+        return "err"
+    
+
+def Assign(line: str, os: str):
+    ASSIGN_PATTERN = '^Assign\s*\(\s*(.*?)\s*,\s*([a-zA-Z_]+)\s*\)$'
+
+    if re.search(ASSIGN_PATTERN, line):
+        if os == "linux":
+            return f'{re.findall(ASSIGN_PATTERN, line)[0][1]}={re.findall(ASSIGN_PATTERN, line)[0][0]}'
+        else:
+            return f'{re.findall(ASSIGN_PATTERN, line)[0][1]} = {re.findall(ASSIGN_PATTERN, line)[0][0]}'
+    else:
+        return "err"
+
 ############ EXPORTED FUNCTIONS ###########
