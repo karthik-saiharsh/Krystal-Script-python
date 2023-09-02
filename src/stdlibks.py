@@ -109,5 +109,53 @@ def Assign(line: str, os: str):
             return f'{re.findall(ASSIGN_PATTERN, line)[0][1]} = {re.findall(ASSIGN_PATTERN, line)[0][0]}'
     else:
         return "err"
+    
 
+def If(line: str, os: str):
+    IF_PATTERN = "^If\s*\((.*?)\)\s+then$"
+    ELIF_PATTERN = "^If\s+Else\s*\((.*?)\)\s+then$"
+    ELSE_PATTERN = "^Else"
+
+    if re.search(IF_PATTERN, line):
+        condition = get_conditions(re.findall(IF_PATTERN, line))[0]
+        condition2 = get_conditions(re.findall(ELIF_PATTERN, line))[0]
+        if os == "linux":
+            return f'if [ {get_conditions(re.findall(IF_PATTERN, line))[0]} ]\nthen'
+        else:
+            return 'if ( ' + {condition} + ' ) {'
+    elif re.search(ELIF_PATTERN, line):
+        if os == "linux":
+            return f'elif [ {condition2} ]\nthen'
+        else:
+            return '}   elseif ( ' + {condition2} + ' ) {'
+    elif re.search(ELSE_PATTERN, line):
+        if os == "linux":
+            return f'else'
+        else:
+            return '}   else {'
+    else:
+        return "err"  
 ############ EXPORTED FUNCTIONS ###########
+
+
+
+########### INTERNAL FUNCTION #############
+
+def get_conditions(cond: str, os: str):
+    if os == "linux":
+        if "&&&" in cond:
+            return cond.replace("&&&", " ] && [ ")
+        elif "|||" in cond:
+            return cond.replace("|||", " ] || [ ")
+        else:
+            return cond
+        
+    else:
+        if "&&&" in cond:
+            return cond.replace("&&&", "&&")
+        elif "|||" in cond:
+            return cond.replace("|||", "||")
+        else:
+            return cond
+
+########### INTERNAL FUNCTION #############

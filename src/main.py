@@ -64,6 +64,8 @@ MAKEFILE_PATTERN = "^makefile"
 MAKEFOLDER_PATTERN = "^makefolder"
 ASK_PATTERN = "^ask"
 ASSIGN_PATTERN = "^assign"
+IF_PATTERN = "^if"
+IF_END_PATTERN = "IFEND"
 ################# TOKENS #######################
 
 
@@ -116,6 +118,12 @@ for line in code:
 
     elif line[:5] == COMMENT:
         write_code(f"#{line[5::]}")
+
+    elif line == IF_END_PATTERN:
+        if args[2] == "linux":
+            write_code("fi")
+        else:
+            write_code("}")
 
     elif re.search(DISPLAY_PATTERN, line.lower()):
         if (gen_code := stdlibks.Display_fn(line, args[2])) != "err":
