@@ -114,48 +114,47 @@ def Assign(line: str, os: str):
 def If(line: str, os: str):
     IF_PATTERN = "^If\s*\((.*?)\)\s+then$"
     ELIF_PATTERN = "^If\s+Else\s*\((.*?)\)\s+then$"
-    ELSE_PATTERN = "^Else"
 
     if re.search(IF_PATTERN, line):
-        condition = get_conditions(re.findall(IF_PATTERN, line))[0]
-        condition2 = get_conditions(re.findall(ELIF_PATTERN, line))[0]
         if os == "linux":
-            return f'if [ {get_conditions(re.findall(IF_PATTERN, line))[0]} ]\nthen'
+            return f'if [ {get_condition(re.findall(IF_PATTERN, line)[0], os)} ]\nthen'
         else:
-            return 'if ( ' + {condition} + ' ) {'
+            return (f'if({get_condition(re.findall(IF_PATTERN, line)[0], os)})' + " {")
+        
     elif re.search(ELIF_PATTERN, line):
         if os == "linux":
-            return f'elif [ {condition2} ]\nthen'
+            return f'elif [ {get_condition(re.findall(ELIF_PATTERN, line)[0], os)} ]\nthen'
         else:
-            return '}   elseif ( ' + {condition2} + ' ) {'
-    elif re.search(ELSE_PATTERN, line):
-        if os == "linux":
-            return f'else'
-        else:
-            return '}   else {'
-    else:
-        return "err"  
-############ EXPORTED FUNCTIONS ###########
-
-
-
-########### INTERNAL FUNCTION #############
-
-def get_conditions(cond: str, os: str):
-    if os == "linux":
-        if "&&&" in cond:
-            return cond.replace("&&&", " ] && [ ")
-        elif "|||" in cond:
-            return cond.replace("|||", " ] || [ ")
-        else:
-            return cond
+            return ("} " + f'elseif({get_condition(re.findall(ELIF_PATTERN, line)[0], os)})' + " {")
         
     else:
-        if "&&&" in cond:
-            return cond.replace("&&&", "&&")
-        elif "|||" in cond:
-            return cond.replace("|||", "||")
-        else:
-            return cond
+        return "err"
+    
 
-########### INTERNAL FUNCTION #############
+def Repeat(line: str, os: str):
+    REPEAT_PATTERN = "^Repeat\((.*?)\)$"
+
+    if re.search(REPEAT_PATTERN, line):
+        if os == "linux":
+            return f'i=0\nwhile [ $i -lt {re.findall(REPEAT_PATTERN, line)[0]} ]\ndo'
+        else:
+            return f'for($i=0; $i -le {re.findall(REPEAT_PATTERN, line)[0]}; $i=$i+1)' + " {"
+    else:
+        return "err"
+############ EXPORTED FUNCTIONS ###########
+
+############ INTERNAL FUNCTIONS ###########
+def get_condition(cond: str, os: str):
+    if os == "linux":
+        if "&&&" in cond:
+            cond = cond.replace("&&&", " ] && [ ")
+        if "|||" in cond:
+            cond = cond.replace("|||", " ] || [ ")
+    else:
+        if "&&&" in cond:
+            cond = cond.replace("&&&", "&&")
+        if "|||" in cond:
+            cond = cond.replace("|||", "||")
+    return cond
+
+############ INTERNAL FUNCTIONS ###########
